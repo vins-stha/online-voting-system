@@ -2,7 +2,7 @@ name: online-voting-app-workflow
 
 on:
   push:
-    branches: ["main", "feature"]
+    branches: ["main", "15-dockerizing-the-project"]
 
 jobs:
   build:
