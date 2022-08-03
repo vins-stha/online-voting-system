@@ -7,6 +7,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      APP_KEY: ${{secrets.APP_KEY}}
     services:
       mysql:
         image: mysql:5.7
@@ -20,8 +22,6 @@ jobs:
 
 
     steps:
-      env:
-        APP_KEY: ${{secrets.APP_KEY}}
       - uses: actions/checkout@v3
       - name: set up php
         uses: shivammathur/setup-php@v2
