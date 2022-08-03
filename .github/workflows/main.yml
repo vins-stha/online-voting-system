@@ -1,0 +1,49 @@
+# This is a basic workflow to help you get started with Actions
+
+name: online-voting-app-workflow
+
+on:
+  push:
+    branches: ["main", "15-dockerizing-the-project"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_HOST: "${DB_HOST}"
+          MYSQL_DATABASE: "${DB_DATABASE}"
+          MYSQL_USERNAME: "${DB_USERNAME}"
+          MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+        ports:
+          - "3306:3306"
+
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: set up php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.1-fpm-alpine"
+      - name: install dependencies
+        run: |
+          composer install --no-scripts
+
+      - name: Laravel init
+        run: |
+          cp .env .env
+          php artisan key:generate
+          php artisan migrate
+
+
+
+
+
+
+
+
+
+
+
