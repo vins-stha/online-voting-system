@@ -20,6 +20,8 @@ jobs:
 
 
     steps:
+      env:
+        APP_KEY: ${{secrets.APP_KEY}}
       - uses: actions/checkout@v3
       - name: set up php
         uses: shivammathur/setup-php@v2
@@ -31,7 +33,7 @@ jobs:
 
       - name: Laravel init
         run: |
-          php artisan key:generate
+#          php artisan key:generate
           php artisan migrate
 
 
