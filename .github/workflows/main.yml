@@ -33,7 +33,6 @@ jobs:
 
       - name: Laravel init
         run: |
-          cp .env .env
           php artisan key:generate
           php artisan migrate
 
