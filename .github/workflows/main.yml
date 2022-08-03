@@ -43,7 +43,7 @@ jobs:
         run: docker build . --file Dockerfile --tag ${{secrets.DOCKERHUB_USERNAME}}/voting-app-image
 
       - name: push image to docker hub
-        run: docker push ${{secrets.DOCKERHUB_USERNAME}}/voting-app-image:v1
+        run: docker push ${{secrets.DOCKERHUB_USERNAME}}/voting-app-image
 
 #      - uses: mr-smithers-excellent/docker-build-push@v5
 #      - name: build docker image and push to repo
