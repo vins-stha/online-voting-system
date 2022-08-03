@@ -1,5 +1,3 @@
-# This is a basic workflow to help you get started with Actions
-
 name: online-voting-app-workflow
 
 on:
@@ -9,14 +7,16 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      APP_KEY: ${{secrets.APP_KEY}}
     services:
       mysql:
         image: mysql:5.7
         env:
-          MYSQL_HOST: "${DB_HOST}"
-          MYSQL_DATABASE: "${DB_DATABASE}"
-          MYSQL_USERNAME: "${DB_USERNAME}"
-          MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+          MYSQL_HOST: ${{secrets.MYSQL_HOST}}
+          MYSQL_DATABASE:  ${{secrets.MYSQL_DATABASE}}
+          MYSQL_USERNAME:  ${{secrets.MYSQL_USERNAME}}
+          MYSQL_ROOT_PASSWORD:  ${{secrets.MYSQL_PASSWORD}}
         ports:
           - "3306:3306"
 
@@ -33,9 +33,7 @@ jobs:
 
       - name: Laravel init
         run: |
-          cp .env .env
           php artisan key:generate
-          php artisan migrate
 
 
 
