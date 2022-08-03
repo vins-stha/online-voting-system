@@ -33,8 +33,7 @@ jobs:
 
       - name: Laravel init
         run: |
-#          php artisan key:generate
-          php artisan migrate
+          php artisan key:generate
 
 
 
