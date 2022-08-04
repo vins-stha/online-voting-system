@@ -22,8 +22,7 @@ jobs:
 
 
     steps:
-        name: Checkout the repo
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       - name: set up php
         uses: shivammathur/setup-php@v2
@@ -55,9 +54,9 @@ jobs:
 #          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
 #          HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
 #          appdir: "app"
-
-
-
+#
+#
+#
 
 
 
