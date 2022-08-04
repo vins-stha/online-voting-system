@@ -22,7 +22,9 @@ jobs:
 
 
     steps:
-      - uses: actions/checkout@v3
+        name: Checkout the repo
+        uses: actions/checkout@v3
+
       - name: set up php
         uses: shivammathur/setup-php@v2
         with:
@@ -46,13 +48,13 @@ jobs:
         run: docker push ${{secrets.DOCKERHUB_USERNAME}}/voting-app-image
 
 #      - name: Deploy to heroku
-      - uses: akhileshns/heroku-deploy@v3.12.12
-      - name: Deploy action to heroku
-        with:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
-          HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
-          appdir: "app"
+#      - uses: akhileshns/heroku-deploy@v3.12.12
+#      - name: Deploy action to heroku
+#        with:
+#          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+#          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+#          HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
+#          appdir: "app"
 
 
 
