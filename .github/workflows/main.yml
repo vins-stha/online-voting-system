@@ -46,17 +46,17 @@ jobs:
       - name: push image to docker hub
         run: docker push ${{secrets.DOCKERHUB_USERNAME}}/voting-app-image
 
-#      - name: Deploy to heroku
-#      - uses: akhileshns/heroku-deploy@v3.12.12
+      - name: Deploy to heroku
+        uses: akhileshns/heroku-deploy@v3.12.12
 #      - name: Deploy action to heroku
-#        with:
-#          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-#          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
-#          HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
-#          appdir: "app"
-#
-#
-#
+        with:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+          HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
+          appdir: "app"
+
+
+
 
 
 
