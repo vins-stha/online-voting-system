@@ -1,0 +1,79 @@
+.home_navbar {
+    margin: 0;
+    padding: 0;
+    position: sticky;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    background-color: rgba(33, 33, 33, 0.98);
+    border-bottom: 1px solid wheat;
+    max-width: 100%;
+
+}
+
+.navbar__logo>img {
+    height: 4rem;
+    width: 7rem;
+}
+
+.navbar__icons {
+    display: flex;
+    margin-left: 0.5rem;
+}
+
+.navbar__icon {
+  
+    width: 4rem;
+    margin-left: 0.5rem;
+}
+
+.navbar__icon :hover {
+    color: goldenrod;
+    font-size: x-large;
+}
+.navbar__icon>.MuiSvgIcon-root {
+    color: white;
+}
+
+
+.navbar__right {
+    display: flex;
+    margin-right: 0;
+    margin-left: 30%;
+    align-items: center;
+    align-content: space-around;
+
+}
+
+.navbar__search {
+    display: flex;
+    border-radius: 5px;
+    align-items: center;
+    align-content: space-between;
+    padding: 0.25rem;
+    background: #313131;
+    margin-right: 1rem;
+}
+
+.navbar__search>input {
+    padding: 0.5rem;
+    background-color: black;
+    margin-right: 1rem;
+    color: white;
+    width: 20rem;
+    border-radius: 5px;
+
+}
+
+.navbar__ask {
+    background: #424242;
+    color: beige;
+    padding: 0.25rem;
+    border-radius: 5px;
+}
+
+.navbar__ask>.MuiButton-root {
+    color: yellow;
+}
