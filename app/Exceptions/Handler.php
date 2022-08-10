@@ -3,6 +3,8 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Spatie\FlareClient\Http\Exceptions\NotFound;
+use Symfony\Component\Translation\Exception\NotFoundResourceException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -47,4 +49,42 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+
+
+    public function render($request, Throwable $e)
+    {
+        if($e instanceof NotFoundResourceException)
+        {
+            return response()->json([
+                'data' => $e->getMessage(),
+                'code'=> 404
+            ], 404);
+        }
+
+        if($e instanceof DuplicateDataException)
+        {
+            return response()->json([
+                'data' => $e->getMessage(),
+                'code'=> 400
+            ], 400);
+        }
+
+
+
+        return parent::render($request, $e);
+    }
+    // public function renders($request, Exception $e)
+    // {
+    //     if($e instanceof NotFoundResourceException)
+    //     {
+    //         return response()->json([
+    //             'data' => "Not found",
+    //             'code'=> 404
+    //         ], 404);
+    //     }
+
+    //     return parent::render($request, $e);
+    // }
+
 }
