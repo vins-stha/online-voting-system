@@ -40,7 +40,7 @@ jobs:
           ls
           echo "***END of Lsing****"
           echo ${{secrets.APP_KEY}}
-          # php artisan key:generate --env="prod"
+          php artisan key:generate --env="prod"
 
       - name: Docker login
         run: |
