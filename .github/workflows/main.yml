@@ -24,7 +24,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Copy .env
-        run: php -r "file_exists('.env') || copy('.env', '.env')"
+        run: |
+        ls
+        php -r "file_exists('.env') || copy('.env', '.env')"
 
       - name: set up php
         uses: shivammathur/setup-php@v2
