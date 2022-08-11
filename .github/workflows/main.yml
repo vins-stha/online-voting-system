@@ -9,7 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       APP_KEY: ${{secrets.APP_KEY}}
-      APP_ENV: "prod"
     services:
       mysql:
         image: mysql:5.7
