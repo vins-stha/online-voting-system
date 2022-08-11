@@ -57,24 +57,21 @@ class Handler extends ExceptionHandler
         if($e instanceof NotFoundResourceException)
         {
             return response()->json([
-                'data' => $e->getMessage(),
-                'code'=> 404
+                'data' => $e->getMessage(),              
             ], 404);
         }
 
         if($e instanceof DuplicateResourceException)
         {
             return response()->json([
-                'data' => $e->getMessage(),
-                'code'=> 400
+                'data' => $e->getMessage(),                
             ], 400);
         }
 
         if ($e instanceof CustomException)
         {
             return response()->json([
-                'data' => " Something went wrong" .$e->getMessage(),
-                'code'=> 400
+                'data' => " Something went wrong" .$e->getMessage(),               
             ],400);
         }
 
