@@ -34,11 +34,11 @@ jobs:
 
       - name: Laravel initializing
         run: |
-          echo "LS-ing::::"
-          ls
-          echo "***END of Lsing****"
-          echo ${{secrets.APP_KEY}}
-          cp .env .env
+          # echo "LS-ing::::"
+          # ls
+          # echo "***END of Lsing****"
+          # echo ${{secrets.APP_KEY}}
+          # cp .env* .env
           php artisan key:generate --env="prod"
 
       - name: Docker login
