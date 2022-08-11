@@ -38,7 +38,7 @@ jobs:
           ls
           echo "***END of Lsing****"
           echo ${{secrets.APP_KEY}}
-          cp .env* .env
+          cp .env.prod .env
           php artisan key:generate --env="prod"
 
       - name: Docker login
