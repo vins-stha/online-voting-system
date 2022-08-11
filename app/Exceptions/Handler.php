@@ -62,12 +62,20 @@ class Handler extends ExceptionHandler
             ], 404);
         }
 
-        if($e instanceof DuplicateDataException)
+        if($e instanceof DuplicateResourceException)
         {
             return response()->json([
                 'data' => $e->getMessage(),
                 'code'=> 400
             ], 400);
+        }
+
+        if ($e instanceof CustomException)
+        {
+            return response()->json([
+                'data' => " Something went wrong" .$e->getMessage(),
+                'code'=> 400
+            ],400);
         }
 
 

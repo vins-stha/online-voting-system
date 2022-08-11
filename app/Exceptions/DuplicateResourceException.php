@@ -3,11 +3,11 @@
 namespace App\Exceptions;
 use Exception;
 
-class DuplicateDataException extends Exception {
+class DuplicateResourceException extends Exception {
 
-    function __construct()
+    function __construct($message)
     {
-        parent::__construct();
+       $this->message = $message;
     }
     
 }
