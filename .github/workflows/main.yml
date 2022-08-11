@@ -33,9 +33,9 @@ jobs:
         run: |
           composer install --no-scripts
 
-      - name: Laravel init
+      - name: Laravel initializing
         run: |
-          php artisan key:generate
+          php artisan key:generate --env="prod"
 
       - name: Docker login
         run: |
