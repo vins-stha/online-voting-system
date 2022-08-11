@@ -34,6 +34,9 @@ jobs:
 
       - name: Laravel initializing
         run: |
+          echo "LS-ing::::"
+          ls
+          echo "***END of Lsing****"
           php artisan key:generate --env="prod"
 
       - name: Docker login
