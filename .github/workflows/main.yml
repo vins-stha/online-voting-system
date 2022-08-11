@@ -2,14 +2,14 @@ name: online-voting-app-workflow
 
 on:
   push:
-    branches: ["main", "dev"]
+    branches: ["main", "dev", "5-question-entity"]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
       APP_KEY: ${{secrets.APP_KEY}}
-      APP_ENV: ${{secrets.APP_ENV}}
+      APP_ENV: "prod"
     services:
       mysql:
         image: mysql:5.7
