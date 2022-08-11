@@ -2,7 +2,7 @@ name: online-voting-app-workflow
 
 on:
   push:
-    branches: ["main", "dev", "5-question-entity"]
+    branches: ["main"]
 
 jobs:
   build:
