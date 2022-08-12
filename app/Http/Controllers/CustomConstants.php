@@ -14,4 +14,6 @@ class CustomConstants
         "up_votes_given",
         "down_votes_given"
     ];
+
+    const TOKEN_SECRET = "online-voting-app";
 }

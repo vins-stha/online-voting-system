@@ -7,6 +7,7 @@ use Exception;
 use App\Exceptions\CustomException;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -35,7 +36,7 @@ class RegisterController extends Controller
                 'email' => $request->get('email')
             ]);
 
-            $token = $user->createToken('votingApp');
+            $token = $user->createToken(CustomConstants::TOKEN_SECRET);
             return response()->json([
                 'access_token' => $token->plainTextToken,
                 'type' => 'Bearer',
@@ -44,5 +45,42 @@ class RegisterController extends Controller
         } catch (Exception $e) {
             throw new CustomException($e->getMessage());
         }
+    }
+
+    public function login(Request $request)
+    {
+        $data = [
+            'email' => $request->get('email'),
+            'password' => $request->get('password')
+        ];
+        var_dump($data);
+        if (!auth()->attempt($data)) {
+            return response()->json([
+                'message' => 'User could not be authorized'
+            ], 401);
+        }
+        $user = Auth::user();
+        return response()->json([
+            // 'access_token' => auth()->user()->createToken(CustomConstants::TOKEN_SECRET)->plainTextToken
+            'access_token' => $user->createToken(CustomConstants::TOKEN_SECRET)->plainTextToken
+
+        ], 200);
+    }
+
+    public function logout(Request $request)
+    {
+        try {
+            $user = $request->user();
+
+            // delete all the tokens
+            $user->tokens()->delete();
+
+            return response()->json([
+                'message' => 'Logout successful'
+            ]);
+        } catch (Exception $e) {
+            throw new CustomException($e->getMessage());
+        }
+
     }
 }
