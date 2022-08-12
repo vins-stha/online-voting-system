@@ -8,7 +8,6 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
-//include('CustomConstants');
 
 class UserController extends Controller
 {
@@ -26,16 +25,16 @@ class UserController extends Controller
 
     public function findById($id)
     {
-        // try {
+         try {
         $user = User::find($id);
         if (!$user)
             throw new NotFoundResourceException("User with id " . $id . " not found");
         return response()->json([
             'data' => $user,
         ]);
-        // }catch (Exception $e){
-        //     var_dump($e->getMessage());
-        // };
+         }catch (Exception $e){
+             var_dump($e->getMessage());
+         };
 
     }
 
