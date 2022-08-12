@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RegisterController;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,7 +26,7 @@ Route::prefix('/v1/users')->group(function(){
     // Route::get('/','UserController@index' );
     Route::get('/',[UserController::class, 'index']);
     Route::get('/{id}',[UserController::class, 'findById']);
-    Route::post('/',[UserController::class, 'create']);
+    Route::post('/',[RegisterController::class, 'register']);
     Route::put('/{id}',[UserController::class, 'update']);
     Route::delete('/{id}',[UserController::class, 'delete']);
     Route::post('/{userId}',[UserController::class, 'updateCounter']);
