@@ -21,29 +21,23 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //});
 
-Route::prefix('/user')->group(function(){
-    Route::post('/register',[RegisterController::class, 'register']);
-    Route::post('/login',[RegisterController::class, 'login']);
-    Route::post('/logout',[RegisterController::class, 'logout']);
+Route::prefix('/user')->group(function () {
+    Route::post('/register', [RegisterController::class, 'register']);
+    Route::post('/login', [RegisterController::class, 'login']);
+    Route::post('/logout', [RegisterController::class, 'logout']);
 
 });
 
 Route::
-    middleware('auth:sanctum')->
-prefix('/v1/users')->group(function(){
+middleware('auth:sanctum')->
+prefix('/v1/users')->group(function () {
     // Route::get('/','UserController@index' );
-    Route::get('/',[UserController::class, 'index']);
-    Route::get('/{id}',[UserController::class, 'findById']);
-    Route::put('/{id}',[UserController::class, 'update']);
-    Route::delete('/{id}',[UserController::class, 'delete']);
-    Route::post('/{userId}',[UserController::class, 'updateCounter']);
-    Route::post('/logout',[RegisterController::class, 'logout']);
-
-
-
-
-
-
+    Route::get('/', [UserController::class, 'index']);
+    Route::get('/{id}', [UserController::class, 'findById']);
+    Route::put('/{id}', [UserController::class, 'update']);
+    Route::delete('/{id}', [UserController::class, 'delete']);
+    Route::post('/{userId}', [UserController::class, 'updateCounter']);
+    Route::post('/logout', [RegisterController::class, 'logout']);
 
 
 });
