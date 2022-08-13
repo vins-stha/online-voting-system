@@ -9,7 +9,7 @@ class Question extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'question'
+        'question', 'user_id'
     ];
 
     public function author()
@@ -17,9 +17,12 @@ class Question extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function questions()
-    {
-        return $this->hasMany(Question::class);
-    }
+//    public function answers(){
+//        return $this->hasMany(Answer::class);
+//    }
+
+//    public function tags(){
+//        return $this->hasMany(Tags::class);
+//    }
 
 }

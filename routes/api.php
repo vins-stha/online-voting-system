@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\QuestionController;
+
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -39,5 +41,17 @@ prefix('/v1/users')->group(function () {
     Route::post('/{userId}', [UserController::class, 'updateCounter']);
     Route::post('/logout', [RegisterController::class, 'logout']);
 
+});
+
+Route::get('/v1/questions/{id}', [QuestionController::class, 'findById']);
+
+Route::
+middleware('auth:sanctum')->
+prefix('/v1/questions')->group(function () {
+    // Route::get('/','UserController@index' );
+    Route::get('/', [QuestionController::class, 'index']);
+    Route::put('/{id}', [QuestionController::class, 'update']);
+    Route::delete('/{id}', [UserController::class, 'delete']);
+    Route::post('/', [QuestionController::class, 'askQuestion']);
 
 });

@@ -92,7 +92,6 @@ class UserController extends Controller
     public function delete($id)
     {
         $user = User::find($id);
-        var_dump($user);
         if (!$user)
             throw new NotFoundResourceException("User not found.");
         else {
