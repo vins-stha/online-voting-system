@@ -62,8 +62,9 @@ Route::
 middleware('auth:sanctum')->
 prefix('/v1/answer')->group(function () {
     Route::get('/', [AnswerController::class, 'index']);
+    Route::post('/vote/{aid}/upvote={up}', [AnswerController::class, 'addVote']);
     Route::post('/{qid}', [AnswerController::class, 'answer']);
-    Route::put('/{id}', [AnswerController::class, 'update']);
+//    Route::put('/{id}', [AnswerController::class, 'update']);
     Route::delete('/{id}', [AnswerController::class, 'delete']);
 
 });

@@ -20,6 +20,30 @@ class AnswerController extends Controller
         ], 200);
     }
 
+    // vote up or down for answer
+    public function addVote(Request $request)
+    {
+        // allow to be up voted or down voted by others than owner
+        $aid = $request->aid;
+        $upvote = $request->up;
+
+        if(!self::isAuthor($request, $aid)){
+            $answer = Answer::find($aid);
+            if($upvote=="true")
+                $answer->up_vote_counts += 1;
+            else
+                $answer->down_vote_counts += 1;
+            $answer->save();
+
+            return response()->json([
+                'answers' => $answer
+            ], 200);
+
+        }
+        return CustomServices::customResponse("message", "Unauthorized or Not allowed", 401, []);
+
+    }
+
     public function answer(Request $request, $qid)
     {
         $validator = Validator::make(
@@ -77,11 +101,13 @@ class AnswerController extends Controller
 
                 return response()->json([
                     'data' => "Answer deleted."
-                ]);
+                ],204);
             }
         }
         return CustomServices::customResponse("message", "Unauthorized", 401, []);
     }
+
+
 
     public static function isAuthor(Request $request, $qid)
     {
