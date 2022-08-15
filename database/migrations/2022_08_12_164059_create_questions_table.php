@@ -20,7 +20,6 @@ return new class extends Migration
             $table->integer('down_votes')->default(0);
             $table->integer('answers_count')->default(0);
 //            $table->unsignedBigInteger('tag_id');
-//            $table->unsignedBigInteger('answer_id');
             $table->foreign('user_id')
                 ->on('users')
                 ->references('id')
@@ -40,4 +39,5 @@ return new class extends Migration
     {
         Schema::dropIfExists('questions');
     }
+
 };

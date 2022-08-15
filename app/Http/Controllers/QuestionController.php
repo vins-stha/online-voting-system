@@ -14,8 +14,8 @@ class QuestionController extends Controller
     //
     public function index(Request $request)
     {
-        $questions = Question::all()->sortByDesc('timestamps');
-//        $questions = Question::with(['answers'])->get();
+//        $questions = Question::all()->sortByDesc('timestamps');
+        $questions = Question::with(['answers'])->get();
         return response()->json([
             'questions' => $questions
         ], 200);
@@ -48,9 +48,25 @@ class QuestionController extends Controller
         } catch (Exception $e) {
             throw new CustomException($e->getMessage());
         }
-        $question = Question::find($id);
+        $question = Question::with('answers')->find($id);
         if (!$question)
             throw new NotFoundResourceException("Question with id " . $id . " not found");
+        return response()->json([
+            'data' => $question,
+        ]);
+    }
+
+    public function findQuestionsByUserId(Request $request, $user_id)
+    {
+//        dd($user_id);
+        try {
+        } catch (Exception $e) {
+            throw new CustomException($e->getMessage());
+        }
+        $question = Question::with('answers')->where('user_id', $user_id)->get();//find($id);
+//        dd($question);
+        if (!$question)
+            throw new NotFoundResourceException("Question with id " . $user_id . " not found");
         return response()->json([
             'data' => $question,
         ]);
