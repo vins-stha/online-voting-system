@@ -27,9 +27,9 @@ class AnswerController extends Controller
         $aid = $request->aid;
         $upvote = $request->up;
 
-        if(!self::isAuthor($request, $aid)){
+        if (!self::isAuthor($request, $aid)) {
             $answer = Answer::find($aid);
-            if($upvote=="true")
+            if ($upvote == "true")
                 $answer->up_vote_counts += 1;
             else
                 $answer->down_vote_counts += 1;
@@ -101,12 +101,11 @@ class AnswerController extends Controller
 
                 return response()->json([
                     'data' => "Answer deleted."
-                ],204);
+                ], 204);
             }
         }
         return CustomServices::customResponse("message", "Unauthorized", 401, []);
     }
-
 
 
     public static function isAuthor(Request $request, $qid)
