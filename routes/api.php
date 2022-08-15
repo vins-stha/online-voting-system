@@ -3,6 +3,8 @@
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\AnswerController;
+
 
 
 use Illuminate\Http\Request;
@@ -33,7 +35,6 @@ Route::prefix('/user')->group(function () {
 Route::
 middleware('auth:sanctum')->
 prefix('/v1/users')->group(function () {
-    // Route::get('/','UserController@index' );
     Route::get('/', [UserController::class, 'index']);
     Route::get('/{id}', [UserController::class, 'findById']);
     Route::put('/{id}', [UserController::class, 'update']);
@@ -43,15 +44,26 @@ prefix('/v1/users')->group(function () {
 
 });
 
-Route::get('/v1/questions/{id}', [QuestionController::class, 'findById']);
 
 Route::
 middleware('auth:sanctum')->
 prefix('/v1/questions')->group(function () {
-    // Route::get('/','UserController@index' );
-    Route::get('/', [QuestionController::class, 'index']);
+    Route::get('/user/{uid}', [QuestionController::class, 'findQuestionsByUserId']);
     Route::put('/{id}', [QuestionController::class, 'update']);
     Route::delete('/{id}', [UserController::class, 'delete']);
     Route::post('/', [QuestionController::class, 'askQuestion']);
+
+});
+Route::get('/v1/questions', [QuestionController::class, 'index']);
+Route::get('/v1/questions/{id}', [QuestionController::class, 'findById']);
+
+
+Route::
+middleware('auth:sanctum')->
+prefix('/v1/answer')->group(function () {
+    Route::get('/', [AnswerController::class, 'index']);
+    Route::post('/{qid}', [AnswerController::class, 'answer']);
+    Route::put('/{id}', [AnswerController::class, 'update']);
+    Route::delete('/{id}', [AnswerController::class, 'delete']);
 
 });

@@ -17,9 +17,9 @@ class Question extends Model
         return $this->belongsTo(User::class);
     }
 
-//    public function answers(){
-//        return $this->hasMany(Answer::class);
-//    }
+    public function answers(){
+        return $this->hasMany(Answer::class);
+    }
 
 //    public function tags(){
 //        return $this->hasMany(Tags::class);

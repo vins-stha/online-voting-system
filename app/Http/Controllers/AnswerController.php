@@ -15,13 +15,12 @@ class AnswerController extends Controller
     public function index(Request $request)
     {
         $answers = Answer::all()->groupBy('question_id');
-//        $questions = Question::with(['answers'])->get();
         return response()->json([
             '$answers' => $answers
         ], 200);
     }
 
-    public function answer(Request $request, $qid, $uid)
+    public function answer(Request $request, $qid)
     {
         $validator = Validator::make(
             ['answer' => $request->get('answer')],
@@ -32,13 +31,16 @@ class AnswerController extends Controller
             return CustomServices::customResponse(
                 "validation error", $validator->errors(), 500, null);
         }
+        $uid = $request->user();
+        $user_id = $uid->id;
 
-        $user_id = $request->user()->id;
         $answer = Answer::create([
             'user_id' => $user_id,
             'question_id' => $qid,
             'answer' => $request->get('answer')
         ]);
+        $question = Question::find($qid);
+        $question->answers()->save($answer);
 
         return CustomServices::customResponse("message", "Answer posted", 200, []);
     }

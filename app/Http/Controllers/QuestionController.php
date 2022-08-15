@@ -11,11 +11,12 @@ use Symfony\Component\Translation\Exception\NotFoundResourceException;
 
 class QuestionController extends Controller
 {
-    //
+    // All questions with answers
     public function index(Request $request)
     {
-        $questions = Question::all()->sortByDesc('timestamps');
-//        $questions = Question::with(['answers'])->get();
+        $questions = Question::with(['answers'])
+            ->get()
+            ->sortByDesc('timestamps');
         return response()->json([
             'questions' => $questions
         ], 200);
@@ -42,15 +43,27 @@ class QuestionController extends Controller
         return CustomServices::customResponse("message", "Question posted", 200, []);
     }
 
+    // Find question by id with answer
     public function findById(Request $request, $id)
     {
         try {
         } catch (Exception $e) {
             throw new CustomException($e->getMessage());
         }
-        $question = Question::find($id);
+        $question = Question::with('answers')->find($id);
         if (!$question)
             throw new NotFoundResourceException("Question with id " . $id . " not found");
+        return response()->json([
+            'data' => $question,
+        ]);
+    }
+
+    // Find all question by user
+    public function findQuestionsByUserId(Request $request, $user_id)
+    {
+        $question = Question::with('answers')->where('user_id', $user_id)->get();//find($id);
+        if (!$question)
+            throw new NotFoundResourceException("Question with id " . $user_id . " not found");
         return response()->json([
             'data' => $question,
         ]);
