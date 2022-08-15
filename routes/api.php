@@ -6,7 +6,6 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\AnswerController;
 
 
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
