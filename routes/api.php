@@ -48,15 +48,13 @@ prefix('/v1/users')->group(function () {
 Route::
 middleware('auth:sanctum')->
 prefix('/v1/questions')->group(function () {
-    // Route::get('/','UserController@index' );
-    Route::get('/', [QuestionController::class, 'index']);
     Route::get('/user/{uid}', [QuestionController::class, 'findQuestionsByUserId']);
-
     Route::put('/{id}', [QuestionController::class, 'update']);
     Route::delete('/{id}', [UserController::class, 'delete']);
     Route::post('/', [QuestionController::class, 'askQuestion']);
 
 });
+Route::get('/v1/questions', [QuestionController::class, 'index']);
 Route::get('/v1/questions/{id}', [QuestionController::class, 'findById']);
 
 
