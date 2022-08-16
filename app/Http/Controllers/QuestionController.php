@@ -69,6 +69,11 @@ class QuestionController extends Controller
         ]);
     }
 
+    // find question by tag
+    public function listQuestionsByTag(Request $request, $tag){
+
+    }
+
     public function update(Request $request, $id)
     {
         $user_id = auth()->user()->id;

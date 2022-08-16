@@ -4,6 +4,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\AnswerController;
+use App\Http\Controllers\TagController;
+
 
 
 use Illuminate\Http\Request;
@@ -65,5 +67,16 @@ prefix('/v1/answer')->group(function () {
     Route::post('/{qid}', [AnswerController::class, 'answer']);
     Route::put('/{id}', [AnswerController::class, 'update']);
     Route::delete('/{id}', [AnswerController::class, 'delete']);
+
+});
+
+Route::
+//middleware('auth:sanctum')->
+prefix('/v1/tags')->group(function () {
+    Route::get('/', [TagController::class, 'index']);
+    Route::post('/vote/{aid}/upvote={up}', [AnswerController::class, 'addVote']);
+    Route::post('/', [TagController::class, 'create']);
+    Route::put('/{id}', [AnswerController::class, 'update']);
+    Route::delete('/{id}', [TagController::class, 'delete']);
 
 });
