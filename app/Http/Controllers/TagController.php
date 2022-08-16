@@ -24,7 +24,7 @@ class TagController extends Controller
     {
         $validator = Validator::make(
             ['name' => $request->get('name')],
-            ['name' => 'required|min:3']
+            ['name' => 'required|min:3|unique:tags']
         );
 
         if ($validator->fails())
@@ -37,6 +37,27 @@ class TagController extends Controller
        $tag->save();
             return CustomServices::customResponse("message", "Tag created", 201, []);
         } catch (\PDOException $e) {
+            throw new CustomException($e->getMessage());
+        }
+    }
+
+    public static function returnTagId($tagname){
+        try {
+            $tag_id = Tag::where('name', $tagname)->value('id');
+            if(!$tag_id)
+            {
+                try {
+                    $tag = Tag::create([
+                        'name' => $tagname
+                    ]);
+                    $tag->save();
+                    return $tag->id;
+                } catch (\PDOException $e) {
+                    throw new CustomException($e->getMessage());
+                }
+            }
+            return $tag_id;
+        }catch (\Exception $e){
             throw new CustomException($e->getMessage());
         }
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\CustomException;
 use App\Models\Question;
+use App\Models\Tag;
 use http\Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -24,9 +25,10 @@ class QuestionController extends Controller
 
     public function askQuestion(Request $request)
     {
-        $validator = Validator::make(
-            ['question' => $request->get('question')],
-            ['question' => 'required|min:10']
+        $validator = Validator::make($request->all(),
+            ['question' => 'required|min:10',
+                'tags' =>'required|min:2|max:5'
+            ]
         );
 
         if ($validator->fails()) {
@@ -35,10 +37,19 @@ class QuestionController extends Controller
         }
 
         $user_id = $request->user()->id;
+        $tags = $request->get('tags');
+        $tags_ids=[];
+
+        foreach ($tags as $tag)
+        {
+            $tags_ids[] = TagController::returnTagId($tag);
+        }
+
         $question = Question::create([
             'user_id' => $user_id,
             'question' => $request->get('question')
         ]);
+        $question->tags()->attach($tags_ids);
 
         return CustomServices::customResponse("message", "Question posted", 200, []);
     }
