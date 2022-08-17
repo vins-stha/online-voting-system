@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\CustomException;
 use App\Models\Question;
+use App\Models\QuestionTag;
 use App\Models\Tag;
 use http\Exception;
 use Illuminate\Http\Request;
@@ -12,10 +13,42 @@ use Symfony\Component\Translation\Exception\NotFoundResourceException;
 
 class QuestionController extends Controller
 {
+    public function listQuestionsByTag(Request $request){
+        // separate tags received in request
+        $tags = explode(",",$request->tags);
+        $questions=[];
+
+        foreach ($tags as $tag)
+        {
+            $tag_ids [] = TagController::returnTagId($tag);
+
+        }
+
+        foreach ($tag_ids as $id)
+        {
+            $tag = Tag::find($id);
+            $found_questions= $tag->questions;
+            foreach ($found_questions as $fq)
+            {
+                if(!in_array($fq, $questions)){
+                    $questions [] = $fq;
+                }
+//                if(!in_array($fq->question, $questions)){
+//                    $questions [] = $fq->question;
+//                }
+            }
+        }
+        return response()->json([
+            'questions' => $questions,
+        ], 200);
+    }
+
+
     // All questions with answers
     public function index(Request $request)
     {
-        $questions = Question::with(['answers'])
+
+        $questions = Question::with(['answers', 'tags'])
             ->get()
             ->sortByDesc('timestamps');
         return response()->json([
@@ -81,9 +114,7 @@ class QuestionController extends Controller
     }
 
     // find question by tag
-    public function listQuestionsByTag(Request $request, $tag){
 
-    }
 
     public function update(Request $request, $id)
     {
