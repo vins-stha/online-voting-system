@@ -36,6 +36,7 @@ jobs:
       - name: Laravel init
         run: |
           php artisan key:generate
+          echo "RUN MIGRATIONs....${MYSQL_DATABASE}"
           php artisan migrate
 
       - name: Docker login
