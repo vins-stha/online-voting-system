@@ -24,10 +24,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-        run: |
-          echo "First checkpiont"
-          ls
-          echo "ENDD"
 
       - name: set up php
         uses: shivammathur/setup-php@v2
@@ -35,6 +31,9 @@ jobs:
           php-version: "8.1-fpm-alpine"
       - name: install dependencies
         run: |
+          echo "Checkpoint 1 \n"
+          ls
+          echo "END...*****"
           composer install --no-scripts
 
       - name: Laravel init
