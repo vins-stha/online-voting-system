@@ -9,7 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       APP_KEY: ${{secrets.APP_KEY}}
-      APP_ENV: ${{secrets.APP_ENV}}
     services:
       mysql:
         image: mysql:5.7
@@ -36,7 +35,8 @@ jobs:
       - name: Laravel init
         run: |
           php artisan key:generate
-          echo "RUN MIGRATIONs....${MYSQL_DATABASE}"
+          echo "RUN MIGRATIONs...."
+          echo ${{secrets.MYSQL_HOST}}
           php artisan migrate
 
       - name: Docker login
