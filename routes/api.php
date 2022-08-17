@@ -59,7 +59,6 @@ Route::get('/v1/question-search/tags={tags}', [QuestionController::class, 'listQ
 
 Route::get('/v1/questions', [QuestionController::class, 'index']);
 
-
 Route::get('/v1/questions/{id}', [QuestionController::class, 'findById']);
 
 
