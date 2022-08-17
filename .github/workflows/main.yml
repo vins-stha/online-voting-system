@@ -31,14 +31,12 @@ jobs:
           php-version: "8.1-fpm-alpine"
       - name: install dependencies
         run: |
-          echo "Checkpoint 1 \n"
-          ls
-          echo "END...*****"
-          composer install --no-scripts
+         composer install --no-scripts
 
       - name: Laravel init
         run: |
           php artisan key:generate
+          php artisan migrate
 
       - name: Docker login
         run: |
