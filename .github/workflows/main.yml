@@ -38,9 +38,6 @@ jobs:
       - name: Laravel init
         run: |
           php artisan key:generate
-          echo "RUN MIGRATIONs...."
-          echo ${{secrets.MYSQL_HOST}}
-          php artisan migrate
 
       - name: Docker login
         run: |
