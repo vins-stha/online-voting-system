@@ -78,9 +78,5 @@ Route::
 //middleware('auth:sanctum')->
 prefix('/v1/tags')->group(function () {
     Route::get('/', [TagController::class, 'index']);
-    Route::post('/vote/{aid}/upvote={up}', [AnswerController::class, 'addVote']);
     Route::post('/', [TagController::class, 'create']);
-    Route::put('/{id}', [AnswerController::class, 'update']);
-    Route::delete('/{id}', [TagController::class, 'delete']);
-
 });
