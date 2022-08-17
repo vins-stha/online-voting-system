@@ -2,14 +2,14 @@ name: online-voting-app-workflow
 
 on:
   push:
-    branches: ["main", "15-dockerizing-the-project", "dev"]
-  mer
+    branches: ["main", "dev", "feature/47-add-tags-to-question"]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
       APP_KEY: ${{secrets.APP_KEY}}
+      APP_ENV: ${{secrets.APP_ENV}}
     services:
       mysql:
         image: mysql:5.7
@@ -31,6 +31,9 @@ jobs:
           php-version: "8.1-fpm-alpine"
       - name: install dependencies
         run: |
+          echo "Checkpoint 1 \n"
+          ls
+          echo "END...*****"
           composer install --no-scripts
 
       - name: Laravel init
