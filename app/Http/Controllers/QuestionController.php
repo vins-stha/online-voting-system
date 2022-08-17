@@ -30,9 +30,12 @@ class QuestionController extends Controller
             $found_questions= $tag->questions;
             foreach ($found_questions as $fq)
             {
-                if(!in_array($fq->question, $questions)){
-                    $questions [] = $fq->question;
+                if(!in_array($fq, $questions)){
+                    $questions [] = $fq;
                 }
+//                if(!in_array($fq->question, $questions)){
+//                    $questions [] = $fq->question;
+//                }
             }
         }
         return response()->json([
