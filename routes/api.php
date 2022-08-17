@@ -55,7 +55,11 @@ prefix('/v1/questions')->group(function () {
     Route::post('/', [QuestionController::class, 'askQuestion']);
 
 });
+Route::get('/v1/question-search/tags={tags}', [QuestionController::class, 'listQuestionsByTag']);
+
 Route::get('/v1/questions', [QuestionController::class, 'index']);
+
+
 Route::get('/v1/questions/{id}', [QuestionController::class, 'findById']);
 
 
