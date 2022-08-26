@@ -32,6 +32,7 @@ Route::prefix('/user')->group(function () {
     Route::post('/logout', [RegisterController::class, 'logout']);
 
 });
+Route::middleware('auth:sanctum')->get('/user/getid', [UserController::class, 'getUserId']);
 
 Route::
 middleware('auth:sanctum')->
@@ -59,7 +60,6 @@ Route::get('/v1/question-search/tags={tags}', [QuestionController::class, 'listQ
 
 Route::get('/v1/questions', [QuestionController::class, 'index']);
 
-
 Route::get('/v1/questions/{id}', [QuestionController::class, 'findById']);
 
 
@@ -75,12 +75,8 @@ prefix('/v1/answer')->group(function () {
 });
 
 Route::
-//middleware('auth:sanctum')->
+middleware('auth:sanctum')->
 prefix('/v1/tags')->group(function () {
     Route::get('/', [TagController::class, 'index']);
-    Route::post('/vote/{aid}/upvote={up}', [AnswerController::class, 'addVote']);
     Route::post('/', [TagController::class, 'create']);
-    Route::put('/{id}', [AnswerController::class, 'update']);
-    Route::delete('/{id}', [TagController::class, 'delete']);
-
 });

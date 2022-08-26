@@ -25,7 +25,7 @@ class RegisterController extends Controller
         ]);
         if ($validate->fails()) {
             return response()->json([
-                'Validation error' => $validate->errors()
+                'Validation_error' => $validate->errors()
             ]);
         }
 
@@ -53,10 +53,10 @@ class RegisterController extends Controller
             'email' => $request->get('email'),
             'password' => $request->get('password')
         ];
-        var_dump($data);
+        // var_dump($data);
         if (!auth()->attempt($data)) {
             return response()->json([
-                'message' => 'User could not be authorized'
+                'message' => 'User could not be authorized',
             ], 401);
         }
         $user = Auth::user();
