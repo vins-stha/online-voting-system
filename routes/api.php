@@ -32,6 +32,7 @@ Route::prefix('/user')->group(function () {
     Route::post('/logout', [RegisterController::class, 'logout']);
 
 });
+Route::middleware('auth:sanctum')->get('/user/getid', [UserController::class, 'getUserId']);
 
 Route::
 middleware('auth:sanctum')->

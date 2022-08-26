@@ -66,7 +66,7 @@ class QuestionController extends Controller
 
         if ($validator->fails()) {
             return CustomServices::customResponse(
-                "validation error", $validator->errors(), 500, null);
+                "validation_error", $validator->errors(), 500, null);
         }
 
         $user_id = $request->user()->id;
