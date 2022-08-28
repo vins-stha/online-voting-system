@@ -25,12 +25,11 @@ class AnswerController extends Controller
     {
         // allow to be up voted or down voted by others than owner
         $aid = $request->aid;
-        $upvote = $request->up;
-        var_dump($upvote);
+        $votetype = $request->votetype;
 
         if (!self::isAuthor($request, $aid)) {
             $answer = Answer::find($aid);
-            if ($upvote == "true")
+            if ($votetype == "up")
                 $answer->up_vote_counts += 1;
             else
                 $answer->down_vote_counts += 1;
