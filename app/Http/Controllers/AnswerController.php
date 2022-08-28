@@ -26,6 +26,7 @@ class AnswerController extends Controller
         // allow to be up voted or down voted by others than owner
         $aid = $request->aid;
         $upvote = $request->up;
+        var_dump($upvote);
 
         if (!self::isAuthor($request, $aid)) {
             $answer = Answer::find($aid);
@@ -53,7 +54,7 @@ class AnswerController extends Controller
 
         if ($validator->fails()) {
             return CustomServices::customResponse(
-                "validation error", $validator->errors(), 500, null);
+                "Validation_error", $validator->errors(), 500, null);
         }
         $uid = $request->user();
         $user_id = $uid->id;
