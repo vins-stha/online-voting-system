@@ -77,9 +77,9 @@ prefix('/v1/answer')->group(function () {
 Route::
 middleware('auth:sanctum')->
 prefix('/v1/tags')->group(function () {
-    Route::get('/', [TagController::class, 'index']);
     Route::post('/', [TagController::class, 'create']);
 });
+Route::get('v1/tags/', [TagController::class, 'index']);
 
 Route::
 middleware('auth:sanctum')->

@@ -20,7 +20,7 @@ class QuestionController extends Controller
 
         foreach ($tags as $tag)
         {
-            $tag_ids [] = TagController::returnTagId($tag);
+            $tag_ids [] = TagController::returnTagId($tag, $action="search");
 
         }
 
