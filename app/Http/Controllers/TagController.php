@@ -41,23 +41,29 @@ class TagController extends Controller
         }
     }
 
-    public static function returnTagId($tagname){
+    public static function returnTagId($tagname)
+    {
         try {
-            $tag_id = Tag::where('name', $tagname)->value('id');
-            if(!$tag_id)
-            {
+            $tag =  Tag::where('name', $tagname)->get();
+
+            $tag_id = $tag[0]->id;
+            if (!$tag_id) {
                 try {
                     $tag = Tag::create([
                         'name' => $tagname
                     ]);
+                    $tag->count_usage++;
                     $tag->save();
                     return $tag->id;
                 } catch (\PDOException $e) {
                     throw new CustomException($e->getMessage());
                 }
             }
+            $tag[0]->count_usage++;
+            $tag[0]->save();
+
             return $tag_id;
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             throw new CustomException($e->getMessage());
         }
     }
