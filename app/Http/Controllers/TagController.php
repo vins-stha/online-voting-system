@@ -40,7 +40,7 @@ class TagController extends Controller
         }
     }
 
-    public static function returnTagId($tagname)
+    public static function returnTagId($tagname,$action)
     {
         try {
             $tag =  Tag::where('name', $tagname)->get();
@@ -60,7 +60,7 @@ class TagController extends Controller
             else {
                 $tag_id = $tag[0]->id;
         
-                $tag[0]->count_usage++;
+                $action == "search" ? "" : $tag[0]->count_usage++;
                 $tag[0]->save();
     
                 return $tag_id;
