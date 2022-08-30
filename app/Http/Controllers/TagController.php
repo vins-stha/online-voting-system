@@ -13,8 +13,7 @@ class TagController extends Controller
     //
     public function index()
     {
-        $tags = Tag::all();
-//        dd($tags);
+        $tags = Tag::orderBy('count_usage','desc')->get();
 
         return CustomServices::customResponse(
             "data", $tags, 200, null);
@@ -45,9 +44,8 @@ class TagController extends Controller
     {
         try {
             $tag =  Tag::where('name', $tagname)->get();
-
-            $tag_id = $tag[0]->id;
-            if (!$tag_id) {
+     
+            if (count($tag) < 1) {
                 try {
                     $tag = Tag::create([
                         'name' => $tagname
@@ -59,10 +57,15 @@ class TagController extends Controller
                     throw new CustomException($e->getMessage());
                 }
             }
-            $tag[0]->count_usage++;
-            $tag[0]->save();
-
-            return $tag_id;
+            else {
+                $tag_id = $tag[0]->id;
+        
+                $tag[0]->count_usage++;
+                $tag[0]->save();
+    
+                return $tag_id;
+            }
+           
         } catch (\Exception $e) {
             throw new CustomException($e->getMessage());
         }
