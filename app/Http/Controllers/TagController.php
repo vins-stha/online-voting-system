@@ -13,8 +13,7 @@ class TagController extends Controller
     //
     public function index()
     {
-        $tags = Tag::all();
-//        dd($tags);
+        $tags = Tag::orderBy('count_usage','desc')->get();
 
         return CustomServices::customResponse(
             "data", $tags, 200, null);
@@ -41,23 +40,33 @@ class TagController extends Controller
         }
     }
 
-    public static function returnTagId($tagname){
+    public static function returnTagId($tagname)
+    {
         try {
-            $tag_id = Tag::where('name', $tagname)->value('id');
-            if(!$tag_id)
-            {
+            $tag =  Tag::where('name', $tagname)->get();
+     
+            if (count($tag) < 1) {
                 try {
                     $tag = Tag::create([
                         'name' => $tagname
                     ]);
+                    $tag->count_usage++;
                     $tag->save();
                     return $tag->id;
                 } catch (\PDOException $e) {
                     throw new CustomException($e->getMessage());
                 }
             }
-            return $tag_id;
-        }catch (\Exception $e){
+            else {
+                $tag_id = $tag[0]->id;
+        
+                $tag[0]->count_usage++;
+                $tag[0]->save();
+    
+                return $tag_id;
+            }
+           
+        } catch (\Exception $e) {
             throw new CustomException($e->getMessage());
         }
     }

@@ -50,7 +50,7 @@ middleware('auth:sanctum')->
 prefix('/v1/questions')->group(function () {
     Route::get('/user/{uid}', [QuestionController::class, 'findQuestionsByUserId']);
     Route::put('/{id}', [QuestionController::class, 'update']);
-    Route::delete('/{id}', [UserController::class, 'delete']);
+    Route::delete('/{id}', [QuestionController::class, 'delete']);
     Route::post('/', [QuestionController::class, 'askQuestion']);
     Route::post('/vote/{qid}/{votetype}', [QuestionController::class, 'addVote']);
 
