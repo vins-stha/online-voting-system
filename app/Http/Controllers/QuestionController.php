@@ -75,9 +75,15 @@ class QuestionController extends Controller
 
         foreach ($tags as $tag)
         {
-            $tags_ids[] = TagController::returnTagId($tag);
-        }
+            // get ids of each tags received
+            $id =  TagController::returnTagId($tag, "");
 
+            // check for possible duplicates
+            if(!in_array($id, $tags_ids)){
+                $tags_ids[] = $id;
+            }
+
+        }
         $question = Question::create([
             'user_id' => $user_id,
             'question' => $request->get('question')
@@ -126,10 +132,40 @@ class QuestionController extends Controller
             );
             if ($validator->fails())
                 return CustomServices::customResponse(
-                    "validation error", $validator->errors(), 500, []);
+                    "validation error",
+                    $validator->errors(),
+                    500,
+                    []
+                );
 
             $question = Question::find($id);
             $question->question = $request->get('question');
+
+            $old_tags_ids = [];
+            foreach($question->tags as $tag){
+                $old_tags_ids[] = $tag->id;
+            }
+            // remove the old tags from the question
+            $question->tags()->detach($old_tags_ids);
+
+            // retrieve all the tags from reqeust body
+            $tags = $request->get('tags');
+            $tags_ids = [];
+
+            foreach ($tags as $tag)
+            {
+                // get ids of each tags received
+                $id =  TagController::returnTagId($tag, "update");
+
+                // check for possible duplicates
+                if(!in_array($id, $tags_ids)){
+                    $tags_ids[] = $id;
+                }
+
+            }
+            // replace old tags and save the new tags
+            $question->tags()->attach($tags_ids);
+
             $question->save();
 
             return CustomServices::customResponse("message", "Question updated", 200, []);
@@ -163,3 +199,4 @@ class QuestionController extends Controller
     }
 
 }
+
