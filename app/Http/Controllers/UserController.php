@@ -128,4 +128,11 @@ class UserController extends Controller
         }
         return false;
     }
+
+    public function getUserId(Request $request){
+        $user_id = $request->user()->id;
+        return response()->json([
+            'user_id' => $user_id
+        ]);
+    }
 }

@@ -20,7 +20,7 @@ class QuestionController extends Controller
 
         foreach ($tags as $tag)
         {
-            $tag_ids [] = TagController::returnTagId($tag);
+            $tag_ids [] = TagController::returnTagId($tag, $action="search");
 
         }
 
@@ -66,7 +66,7 @@ class QuestionController extends Controller
 
         if ($validator->fails()) {
             return CustomServices::customResponse(
-                "validation error", $validator->errors(), 500, null);
+                "validation_error", $validator->errors(), 500, null);
         }
 
         $user_id = $request->user()->id;
