@@ -76,7 +76,7 @@ class QuestionController extends Controller
         foreach ($tags as $tag)
         {
             // get ids of each tags received
-            $id =  TagController::returnTagId($tag, "");
+            $id =  TagController::returnTagId($tag, "create");
 
             // check for possible duplicates
             if(!in_array($id, $tags_ids)){
