@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\CustomException;
 use App\Exceptions\DuplicateResourceException;
+use App\Models\Answer;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
+use Illuminate\Support\Facades\DB;
+
 
 class UserController extends Controller
 {
@@ -134,5 +137,23 @@ class UserController extends Controller
         return response()->json([
             'user_id' => $user_id
         ]);
+    }
+
+    // get number of answers by a user
+    public function answerCountByAUser (Request $request, $id)
+    {   
+        var_dump($request->get('id'));
+        var_dump($id);
+
+        // dd($request);
+        $uid = $request->get('id');
+        $count = DB::table('answers')
+                ->where('user_id',$id)
+                ->count();
+                return response()->json([
+                    'count' => $count,
+                    'uid' => $request->get('id')
+                ]);
+
     }
 }
