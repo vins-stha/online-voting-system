@@ -28,7 +28,7 @@ Route::prefix('/user')->group(function () {
     Route::post('/register', [RegisterController::class, 'register']);
     Route::post('/login', [RegisterController::class, 'login']);
     Route::post('/logout', [RegisterController::class, 'logout']);
-    Route::get('/answercount/{id}', [UserController::class, 'answerCountByAUser']);
+    Route::get('/answercount/{id}', [UserController::class, 'userPoints']);
 });
 
 
@@ -51,6 +51,8 @@ prefix('/v1/users')->group(function () {
 Route::
 middleware('auth:sanctum')->
 prefix('/v1/questions')->group(function () {
+    Route::get('/duplicate/{qid}', [QuestionController::class, 'handleReportDuplicate']);
+
     Route::get('/user/{uid}', [QuestionController::class, 'findQuestionsByUserId']);
     Route::put('/{id}', [QuestionController::class, 'update']);
     Route::delete('/{id}', [QuestionController::class, 'delete']);

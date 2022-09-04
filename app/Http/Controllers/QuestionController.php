@@ -6,6 +6,7 @@ use App\Exceptions\CustomException;
 use App\Models\Question;
 use App\Models\QuestionTag;
 use App\Models\Tag;
+use App\Models\User;
 use http\Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -188,6 +189,30 @@ class QuestionController extends Controller
             }
         }
         return CustomServices::customResponse("message", "Unauthorized", 401, []);
+    }
+
+    public function handleReportDuplicate(Request $request, $qid)
+    {
+        $user_id = auth()->user()->id;
+
+
+        if (!self::isAuthor($request, $qid)) {
+            $user_points = UserController::userPoints($request, $user_id)['total_points'];
+            if ($user_points >= User::USER_MINIMUM_POINTS) {
+                // increase count of duplicate
+                // if(User::MINIMUM_DUPLICATE_REPORTS >= count_duplicate)
+                // delete question
+                $message = "Thank you for letting us know.";
+            } else
+
+                $message =  "Could not report duplicate. You dont have enough points ";
+        } else {
+            $message = 'As author you are not allowed to report duplicate. Either edit or delete the question';
+        }
+
+        return response()->json([
+            'message' => $message,
+        ]);
     }
 
     public static function isAuthor(Request $request, $qid)

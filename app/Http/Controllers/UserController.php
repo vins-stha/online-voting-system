@@ -39,7 +39,6 @@ class UserController extends Controller
         } catch (Exception $e) {
             var_dump($e->getMessage());
         };
-
     }
 
     public function create(Request $request)
@@ -132,7 +131,8 @@ class UserController extends Controller
         return false;
     }
 
-    public function getUserId(Request $request){
+    public function getUserId(Request $request)
+    {
         $user_id = $request->user()->id;
         return response()->json([
             'user_id' => $user_id
@@ -140,20 +140,22 @@ class UserController extends Controller
     }
 
     // get number of answers by a user
-    public function answerCountByAUser (Request $request, $id)
-    {   
-        var_dump($request->get('id'));
-        var_dump($id);
-
-        // dd($request);
+    public static function userPoints(Request $request, $id)
+    {
         $uid = $request->get('id');
         $count = DB::table('answers')
-                ->where('user_id',$id)
-                ->count();
-                return response()->json([
-                    'count' => $count,
-                    'uid' => $request->get('id')
-                ]);
+            ->where('user_id', $id)
+            ->count();
 
+        $user = User::find($id);
+        $upvotes = $user->up_votes_received;
+        $downvotes = $user->down_votes_received;
+
+        return [
+            'answers_count' => $count,
+            'uid' => $request->get('id'),
+            'total_points' => $count + $upvotes - $downvotes,
+            'min' => User::USER_MINIMUM_POINTS
+        ];
     }
 }
