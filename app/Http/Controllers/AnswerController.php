@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exceptions\CustomException;
 use App\Models\Answer;
 use App\Models\Question;
+use App\Models\User;
 use http\Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -29,16 +30,22 @@ class AnswerController extends Controller
 
         if (!self::isAuthor($request, $aid)) {
             $answer = Answer::find($aid);
-            if ($votetype == "up")
+            $author = User::find($answer->user_id);
+            if ($votetype == "up") {
                 $answer->up_vote_counts += 1;
-            else
+                // increase the points of author               
+                $author->up_votes_recieved++;
+            } else {
                 $answer->down_vote_counts += 1;
+                // decrease the poinst of the author
+                $author->down_votes_received++;
+            }
             $answer->save();
+            $author->save();
 
             return response()->json([
                 'answers' => $answer
             ], 200);
-
         }
         return CustomServices::customResponse("message", "Unauthorized or Not allowed", 401, []);
 

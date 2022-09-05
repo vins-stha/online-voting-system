@@ -51,8 +51,6 @@ prefix('/v1/users')->group(function () {
 Route::
 middleware('auth:sanctum')->
 prefix('/v1/questions')->group(function () {
-    Route::get('/duplicate/{qid}', [QuestionController::class, 'handleReportDuplicate']);
-
     Route::get('/user/{uid}', [QuestionController::class, 'findQuestionsByUserId']);
     Route::put('/{id}', [QuestionController::class, 'update']);
     Route::delete('/{id}', [QuestionController::class, 'delete']);
@@ -88,7 +86,7 @@ Route::get('v1/tags/', [TagController::class, 'index']);
 Route::
 middleware('auth:sanctum')->
 prefix('/v1/votes')->group(function () {
-
+    Route::post('/duplicate/{item}/{itemid}', [QuestionController::class, 'handleReportDuplicate']);
     Route::post('/{item}/{itemid}/{votetype}', [VoteController::class, 'vote']);
  
 });
