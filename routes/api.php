@@ -83,11 +83,10 @@ prefix('/v1/tags')->group(function () {
 });
 Route::get('v1/tags/', [TagController::class, 'index']);
 
-// Route::get('/v1/votes/duplicate/{item}/{itemid}', [QuestionController::class, 'handleReportDuplicate']);
 Route::
 middleware('auth:sanctum')->
 prefix('/v1/votes')->group(function () {
-    Route::get('/duplicate/{item}/{itemid}', [QuestionController::class, 'handleReportDuplicate']);
+    Route::post('/duplicate/{item}/{itemid}', [QuestionController::class, 'handleReportDuplicate']);
     Route::post('/{item}/{itemid}/{votetype}', [VoteController::class, 'vote']);
  
 });
