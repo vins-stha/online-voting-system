@@ -195,14 +195,26 @@ class QuestionController extends Controller
     {
         $user_id = auth()->user()->id;
 
-
         if (!self::isAuthor($request, $qid)) {
             $user_points = UserController::userPoints($request, $user_id)['total_points'];
             if ($user_points >= User::USER_MINIMUM_POINTS) {
                 // increase count of duplicate
-                // if(User::MINIMUM_DUPLICATE_REPORTS >= count_duplicate)
+                $question = Question::find($qid);
+                if($question->count_duplicate_reports++ >= User:: MINIMUM_DUPLICATE_REPORTS) {
+                
                 // delete question
-                $message = "Thank you for letting us know.";
+                $question->delete();              
+                
+                }
+                else 
+                {
+                    $question->count_duplicate_reports++;
+                    $question->save();
+                   
+                }
+                // send email to author 
+                $message = "Thank you for your effort. Question has been reported for duplicate.";              
+                
             } else
 
                 $message =  "Could not report duplicate. You dont have enough points ";
@@ -212,6 +224,7 @@ class QuestionController extends Controller
 
         return response()->json([
             'message' => $message,
+            'user_points' => $user_points
         ]);
     }
 
