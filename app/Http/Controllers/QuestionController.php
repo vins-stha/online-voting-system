@@ -14,29 +14,26 @@ use Symfony\Component\Translation\Exception\NotFoundResourceException;
 
 class QuestionController extends Controller
 {
-    public function listQuestionsByTag(Request $request){
+    public function listQuestionsByTag(Request $request)
+    {
         // separate tags received in request
-        $tags = explode(",",$request->tags);
-        $questions=[];
+        $tags = explode(",", $request->tags);
+        $questions = [];
 
-        foreach ($tags as $tag)
-        {
-            $tag_ids [] = TagController::returnTagId($tag, $action="search");
-
+        foreach ($tags as $tag) {
+            $tag_ids[] = TagController::returnTagId($tag, $action = "search");
         }
 
-        foreach ($tag_ids as $id)
-        {
+        foreach ($tag_ids as $id) {
             $tag = Tag::find($id);
-            $found_questions= $tag->questions;
-            foreach ($found_questions as $fq)
-            {
-                if(!in_array($fq, $questions)){
-                    $questions [] = $fq;
+            $found_questions = $tag->questions;
+            foreach ($found_questions as $fq) {
+                if (!in_array($fq, $questions)) {
+                    $questions[] = $fq;
                 }
-//                if(!in_array($fq->question, $questions)){
-//                    $questions [] = $fq->question;
-//                }
+                //                if(!in_array($fq->question, $questions)){
+                //                    $questions [] = $fq->question;
+                //                }
             }
         }
         return response()->json([
@@ -59,31 +56,35 @@ class QuestionController extends Controller
 
     public function askQuestion(Request $request)
     {
-        $validator = Validator::make($request->all(),
-            ['question' => 'required|min:10',
-                'tags' =>'required|min:2|max:5'
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'question' => 'required|min:10',
+                'tags' => 'required|min:2|max:5'
             ]
         );
 
         if ($validator->fails()) {
             return CustomServices::customResponse(
-                "validation_error", $validator->errors(), 500, null);
+                "validation_error",
+                $validator->errors(),
+                500,
+                null
+            );
         }
 
         $user_id = $request->user()->id;
         $tags = $request->get('tags');
-        $tags_ids=[];
+        $tags_ids = [];
 
-        foreach ($tags as $tag)
-        {
+        foreach ($tags as $tag) {
             // get ids of each tags received
             $id =  TagController::returnTagId($tag, "create");
 
             // check for possible duplicates
-            if(!in_array($id, $tags_ids)){
+            if (!in_array($id, $tags_ids)) {
                 $tags_ids[] = $id;
             }
-
         }
         $question = Question::create([
             'user_id' => $user_id,
@@ -112,7 +113,7 @@ class QuestionController extends Controller
     // Find all question by user
     public function findQuestionsByUserId(Request $request, $user_id)
     {
-        $question = Question::with('answers')->where('user_id', $user_id)->get();//find($id);
+        $question = Question::with('answers')->where('user_id', $user_id)->get(); //find($id);
         if (!$question)
             throw new NotFoundResourceException("Question with id " . $user_id . " not found");
         return response()->json([
@@ -143,7 +144,7 @@ class QuestionController extends Controller
             $question->question = $request->get('question');
 
             $old_tags_ids = [];
-            foreach($question->tags as $tag){
+            foreach ($question->tags as $tag) {
                 $old_tags_ids[] = $tag->id;
             }
             // remove the old tags from the question
@@ -153,16 +154,14 @@ class QuestionController extends Controller
             $tags = $request->get('tags');
             $tags_ids = [];
 
-            foreach ($tags as $tag)
-            {
+            foreach ($tags as $tag) {
                 // get ids of each tags received
                 $id =  TagController::returnTagId($tag, "update");
 
                 // check for possible duplicates
-                if(!in_array($id, $tags_ids)){
+                if (!in_array($id, $tags_ids)) {
                     $tags_ids[] = $id;
                 }
-
             }
             // replace old tags and save the new tags
             $question->tags()->attach($tags_ids);
@@ -194,27 +193,29 @@ class QuestionController extends Controller
     public function handleReportDuplicate(Request $request, $qid)
     {
         $user_id = auth()->user()->id;
+        $item = $request->item;
+        $item_id = $request->itemid;
+        $status = 200;
 
-        if (!self::isAuthor($request, $qid)) {
+        if (!self::isAuthor($request, $item_id)) {
             $user_points = UserController::userPoints($request, $user_id)['total_points'];
             if ($user_points >= User::USER_MINIMUM_POINTS) {
                 // increase count of duplicate
-                $question = Question::find($qid);
-                if($question->count_duplicate_reports++ >= User:: MINIMUM_DUPLICATE_REPORTS) {
-                
-                // delete question
-                $question->delete();              
-                
-                }
-                else 
-                {
-                    $question->count_duplicate_reports++;
+                $question = Question::find($item_id);
+
+                if ($question->count_duplicate_reports++ >= User::MINIMUM_DUPLICATE_REPORTS) {
+
+                    // delete question
+                    $question->delete();
+                    $message = "Thank you for your effort. Question has been reported for duplicate.";
+                    $status = 204;
+                } else {
+                    $question->count_duplicate_reports = $question->count_duplicate_reports++;
                     $question->save();
-                   
+                    $message = "Thank you for your effort. Question has been reported for duplicate.";
                 }
-                // send email to author 
-                $message = "Thank you for your effort. Question has been reported for duplicate.";              
-                
+                // send email to author Todo                
+
             } else
 
                 $message =  "Could not report duplicate. You dont have enough points ";
@@ -224,17 +225,19 @@ class QuestionController extends Controller
 
         return response()->json([
             'message' => $message,
-            'user_points' => $user_points
-        ]);
+            'user_points' => $user_points,
+            'item' => $item,
+            'item id' => $item_id
+        ], $status);
     }
 
     public static function isAuthor(Request $request, $qid)
     {
         $user_id = auth()->user()->id;
         $question = Question::find($qid);
+        // var_dump($user_id,$qid);
+        // var_dump($question->user_id);
 
         return $user_id === $question->user_id;
     }
-
 }
-
