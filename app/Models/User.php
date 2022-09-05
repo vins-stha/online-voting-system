@@ -12,6 +12,12 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    // least points required for user to be able to report duplicate
+    // points = number of answers given + up votes received by user 
+    const USER_MINIMUM_POINTS  = 2;
+    // least number of reports to be removed 
+    const MINIMUM_DUPLICATE_REPORTS = 3;
+
     /**
      * The attributes that are mass assignable.
      *

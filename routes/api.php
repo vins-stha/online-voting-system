@@ -28,8 +28,11 @@ Route::prefix('/user')->group(function () {
     Route::post('/register', [RegisterController::class, 'register']);
     Route::post('/login', [RegisterController::class, 'login']);
     Route::post('/logout', [RegisterController::class, 'logout']);
-
+    Route::get('/answercount/{id}', [UserController::class, 'userPoints']);
 });
+
+
+
 Route::middleware('auth:sanctum')->get('/user/getid', [UserController::class, 'getUserId']);
 
 Route::
@@ -48,14 +51,15 @@ prefix('/v1/users')->group(function () {
 Route::
 middleware('auth:sanctum')->
 prefix('/v1/questions')->group(function () {
+    Route::get('/duplicate/{qid}', [QuestionController::class, 'handleReportDuplicate']);
+
     Route::get('/user/{uid}', [QuestionController::class, 'findQuestionsByUserId']);
     Route::put('/{id}', [QuestionController::class, 'update']);
     Route::delete('/{id}', [QuestionController::class, 'delete']);
     Route::post('/', [QuestionController::class, 'askQuestion']);
     Route::post('/vote/{qid}/{votetype}', [QuestionController::class, 'addVote']);
-
-
 });
+
 Route::get('/v1/question-search/tags={tags}', [QuestionController::class, 'listQuestionsByTag']);
 
 Route::get('/v1/questions', [QuestionController::class, 'index']);

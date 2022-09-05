@@ -6,6 +6,7 @@ use App\Exceptions\CustomException;
 use App\Models\Question;
 use App\Models\QuestionTag;
 use App\Models\Tag;
+use App\Models\User;
 use http\Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -75,9 +76,15 @@ class QuestionController extends Controller
 
         foreach ($tags as $tag)
         {
-            $tags_ids[] = TagController::returnTagId($tag);
-        }
+            // get ids of each tags received
+            $id =  TagController::returnTagId($tag, "create");
 
+            // check for possible duplicates
+            if(!in_array($id, $tags_ids)){
+                $tags_ids[] = $id;
+            }
+
+        }
         $question = Question::create([
             'user_id' => $user_id,
             'question' => $request->get('question')
@@ -126,10 +133,40 @@ class QuestionController extends Controller
             );
             if ($validator->fails())
                 return CustomServices::customResponse(
-                    "validation error", $validator->errors(), 500, []);
+                    "validation error",
+                    $validator->errors(),
+                    500,
+                    []
+                );
 
             $question = Question::find($id);
             $question->question = $request->get('question');
+
+            $old_tags_ids = [];
+            foreach($question->tags as $tag){
+                $old_tags_ids[] = $tag->id;
+            }
+            // remove the old tags from the question
+            $question->tags()->detach($old_tags_ids);
+
+            // retrieve all the tags from reqeust body
+            $tags = $request->get('tags');
+            $tags_ids = [];
+
+            foreach ($tags as $tag)
+            {
+                // get ids of each tags received
+                $id =  TagController::returnTagId($tag, "update");
+
+                // check for possible duplicates
+                if(!in_array($id, $tags_ids)){
+                    $tags_ids[] = $id;
+                }
+
+            }
+            // replace old tags and save the new tags
+            $question->tags()->attach($tags_ids);
+
             $question->save();
 
             return CustomServices::customResponse("message", "Question updated", 200, []);
@@ -154,6 +191,43 @@ class QuestionController extends Controller
         return CustomServices::customResponse("message", "Unauthorized", 401, []);
     }
 
+    public function handleReportDuplicate(Request $request, $qid)
+    {
+        $user_id = auth()->user()->id;
+
+        if (!self::isAuthor($request, $qid)) {
+            $user_points = UserController::userPoints($request, $user_id)['total_points'];
+            if ($user_points >= User::USER_MINIMUM_POINTS) {
+                // increase count of duplicate
+                $question = Question::find($qid);
+                if($question->count_duplicate_reports++ >= User:: MINIMUM_DUPLICATE_REPORTS) {
+                
+                // delete question
+                $question->delete();              
+                
+                }
+                else 
+                {
+                    $question->count_duplicate_reports++;
+                    $question->save();
+                   
+                }
+                // send email to author 
+                $message = "Thank you for your effort. Question has been reported for duplicate.";              
+                
+            } else
+
+                $message =  "Could not report duplicate. You dont have enough points ";
+        } else {
+            $message = 'As author you are not allowed to report duplicate. Either edit or delete the question';
+        }
+
+        return response()->json([
+            'message' => $message,
+            'user_points' => $user_points
+        ]);
+    }
+
     public static function isAuthor(Request $request, $qid)
     {
         $user_id = auth()->user()->id;
@@ -163,3 +237,4 @@ class QuestionController extends Controller
     }
 
 }
+

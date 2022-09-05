@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\CustomException;
 use App\Exceptions\DuplicateResourceException;
+use App\Models\Answer;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
+use Illuminate\Support\Facades\DB;
+
 
 class UserController extends Controller
 {
@@ -36,7 +39,6 @@ class UserController extends Controller
         } catch (Exception $e) {
             var_dump($e->getMessage());
         };
-
     }
 
     public function create(Request $request)
@@ -129,10 +131,31 @@ class UserController extends Controller
         return false;
     }
 
-    public function getUserId(Request $request){
+    public function getUserId(Request $request)
+    {
         $user_id = $request->user()->id;
         return response()->json([
             'user_id' => $user_id
         ]);
+    }
+
+    // get number of answers by a user
+    public static function userPoints(Request $request, $id)
+    {
+        $uid = $request->get('id');
+        $count = DB::table('answers')
+            ->where('user_id', $id)
+            ->count();
+
+        $user = User::find($id);
+        $upvotes = $user->up_votes_received;
+        $downvotes = $user->down_votes_received;
+
+        return [
+            'answers_count' => $count,
+            'uid' => $request->get('id'),
+            'total_points' => $count + $upvotes - $downvotes,
+            'min' => User::USER_MINIMUM_POINTS
+        ];
     }
 }

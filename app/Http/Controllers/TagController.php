@@ -33,7 +33,7 @@ class TagController extends Controller
             $tag = Tag::create([
                 'name' => $request->get('name')
             ]);
-       $tag->save();
+            $tag->save();
             return CustomServices::customResponse("message", "Tag created", 201, []);
         } catch (\PDOException $e) {
             throw new CustomException($e->getMessage());
@@ -44,7 +44,7 @@ class TagController extends Controller
     {
         try {
             $tag =  Tag::where('name', $tagname)->get();
-     
+
             if (count($tag) < 1) {
                 try {
                     $tag = Tag::create([
@@ -59,13 +59,13 @@ class TagController extends Controller
             }
             else {
                 $tag_id = $tag[0]->id;
-        
-                $action == "search" ? "" : $tag[0]->count_usage++;
+
+                $action == "search" || $action == "update" ? "" : $tag[0]->count_usage++;
                 $tag[0]->save();
-    
+
                 return $tag_id;
             }
-           
+
         } catch (\Exception $e) {
             throw new CustomException($e->getMessage());
         }
