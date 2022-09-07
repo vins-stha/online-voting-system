@@ -24,15 +24,37 @@ class VoteController extends Controller
                 $user = User::find(auth()->user()->id);
 
                 if ($item == "answer") {
+                    $voters = [];
                     $answer = Answer::find($itemid);
-                    if ($votetype == "up")
-                        $answer->up_vote_counts += 1;
-                    else
-                        $answer->down_vote_counts += 1;
+                 
+                    foreach ($answer->voters as $voter) {
+                        $voters[] = $voter['id'];
+                    }
+
+                    // check if uid is present in voterslist
+                    if (!in_array($uid, $voters)) {
+                        if ($votetype == "up")
+                            $answer->up_vote_counts += 1;
+                        else if ($votetype == "down")
+                            $answer->down_vote_counts += 1;
+                        else
+                            // To do
+                            return;
+                        // // attach voters id into question
+                        $answer->voters()->attach($uid);
+                    }
+                    // return error
+                    else {
+                        // throw new Exception("Vote already registered");
+                        return response()->json([
+                            'error' => "Vote already registered",
+                        ], 400);
+
+                    }
                     $answer->save();
                     return response()->json([
-                        'answers' => $answer
-                    ], 200);
+                        'answer' => $answer,
+                    ], 200);        
                 }
                 if ($item == "question") {
                     $voters = [];
@@ -41,8 +63,8 @@ class VoteController extends Controller
                     foreach ($question->voters as $voter) {
                         $voters[] = $voter['id'];
                     }
-                    // check if uid is present in voterslist
 
+                    // check if uid is present in voterslist
                     if (!in_array($uid, $voters)) {
                         if ($votetype == "up")
                             $question->vote_counts += 1;
@@ -56,10 +78,10 @@ class VoteController extends Controller
                     }
                     // return error
                     else {
-                        throw new Exception("Vote already registered");
-                        // return response()->json([
-                        //     'error' => "Vote already registered",
-                        // ], 200);
+                        // throw new Exception("Vote already registered");
+                        return response()->json([
+                            'error' => "Vote already registered",
+                        ], 200);
 
                     }
                     $question->save();
@@ -70,7 +92,7 @@ class VoteController extends Controller
             }
         } catch (Exception $e) {
 
-            return CustomServices::customResponse("message", $e->getMessage(), 400, []);
+            return CustomServices::customResponse("error", "sth wnt wrong".$e->getMessage(), 400, []);
         }
     }
 
