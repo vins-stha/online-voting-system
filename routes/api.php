@@ -31,7 +31,7 @@ Route::prefix('/user')->group(function () {
     Route::get('/answercount/{id}', [UserController::class, 'userPoints']);
 });
 
-
+Route::get('/users/{id}', [UserController::class, 'findById']);
 
 Route::middleware('auth:sanctum')->get('/user/getid', [UserController::class, 'getUserId']);
 
