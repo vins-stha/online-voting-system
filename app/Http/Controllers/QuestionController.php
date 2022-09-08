@@ -45,10 +45,24 @@ class QuestionController extends Controller
     // All questions with answers
     public function index(Request $request)
     {
-
+        // if (!$request->user()->id) 
         $questions = Question::with(['answers', 'tags'])
-            ->get()
-            ->sortByDesc('timestamps');
+        
+        ->get();
+        // ->orderedBy('timestamps');
+        // {
+        //     $questions = Question::with(['answers', 'tags'])
+        //     ->get()
+        //     ->sortByDesc('created_at', 'desc');
+        //         // ->get();
+        //         // ->sortByDesc('timestamps');
+        // }
+        // else
+        // {
+        //     $questions = Question::with(['answers', 'tags'])
+        //     ->get()
+        //     ->orderedBy('timestamps');
+        // }
         return response()->json([
             'questions' => $questions
         ], 200);
