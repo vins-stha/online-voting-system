@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exceptions\CustomException;
 use App\Exceptions\DuplicateResourceException;
 use App\Models\Answer;
+use App\Models\Question;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -27,18 +28,30 @@ class UserController extends Controller
         ]);
     }
 
-    public function findById($id)
+    public function findById(Request $request, $id)
     {
         try {
             $user = User::find($id);
+            $questions = Question::where('user_id', $id)->get();
+            // ->paginate(3);                     
+
             if (!$user)
                 throw new NotFoundResourceException("User with id " . $id . " not found");
             return response()->json([
                 'data' => $user,
+                'questions' => $questions,
+                'answers' => self::userPoints($request, $id),
+                'stat'=> self::userSummary($id),
             ]);
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return response()->json([
+                'error' => $e->getMessage(),
+            ],400);
         };
+    }
+
+    public function getDetailedInformation(Request $request){
+
     }
 
     public function create(Request $request)
@@ -157,5 +170,42 @@ class UserController extends Controller
             'total_points' => $count + $upvotes - $downvotes,
             'min' => User::USER_MINIMUM_POINTS
         ];
+    }
+
+
+    public function userSummary($id)
+    {
+        $questions = Question::where('user_id', $id)->get();
+        $answers = Answer::where('user_id', $id)->get();
+
+        $votes = [];
+        $votes['up_votes_received'] =  $votes['down_votes_received'] =  $votes['up_voted_answer']  =  $votes['down_voted_answer'] = 0;
+        
+        $votes['votedQuestions'] = DB::table('question_user')->where('user_id', $id)->count();
+        $votes['votedAnswers'] = DB::table('answer_user')->where('user_id', $id)->count();
+
+        if ($questions) {
+            foreach ($questions as $question) {
+                $votes['up_votes_received'] += $question->vote_counts;
+                $votes['down_votes_received'] += $question->down_votes;
+            }
+        }
+
+        if ($answers) {
+            foreach ($answers as $answer) {
+                $votes['up_voted_answer'] += $answer->up_vote_counts;
+                $votes['down_voted_answer'] += $answer->down_vote_count;
+            }
+        }
+        $contribution = [];
+        $contribution['questions'] = count($questions);
+        $contribution['answers'] = count($answers);
+
+        $userStat = [
+            'votes' => $votes,
+            'contribution' => $contribution
+        ];
+
+        return $userStat;
     }
 }
