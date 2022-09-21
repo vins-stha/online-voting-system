@@ -12,7 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Storage;
+use Validator;
 
 class UserController extends Controller
 {
@@ -33,7 +34,7 @@ class UserController extends Controller
         try {
             $user = User::find($id);
             $questions = Question::where('user_id', $id)->get();
-            // ->paginate(3);                     
+            // ->paginate(3);
 
             if (!$user)
                 throw new NotFoundResourceException("User with id " . $id . " not found");
@@ -70,6 +71,26 @@ class UserController extends Controller
                 $user['name'] = $request->get('name');
                 $user['email'] = $email;
                 $user['password'] = Hash::make($request->get('password'));
+
+                if ($request->file()) {
+                    $validator = Validator::make(
+                        $request->all(),
+                        [
+                            'avatar' => 'mimes:jpg,jpeg,png,bmp|max:2048'
+                        ]
+                    );
+
+                    if ($validator->fails()) {
+                        return response()->json([
+                            'Validation_Error' => "Unsupported file format for 'avatar'",
+                        ]);
+                    }
+
+                    $fileName = "user_" . $request->get('name') . "_avatar";
+
+                    $filePath = $request->file('avatar')->storePubliclyAs('avatars', $fileName, 'public');
+                    $user['avatar'] = '/storage/' . $filePath;
+                }
                 $newUser = new User($user);
                 $newUser->save();
             } catch (Exception $e) {
@@ -81,25 +102,46 @@ class UserController extends Controller
         ]);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id=null)
     {
-
         $user = User::find($id);
 
         if (!$user) {
             throw new NotFoundResourceException("User not registered yet.");
         } else {
-
             try {
                 $user['name'] = $request->get('name') ? $request->get('name') : $user['name'];
                 $user['email'] = $request->get('email') ? $request->get('email') : $user['email'];;
                 $user['password'] = $request->get('password') ? Hash::make($request->get('password')) : $user['password'];
+                if ($request->file()) {
+                    $validator = Validator::make(
+                        $request->all(),
+                        [
+                            'avatar' => 'mimes:jpg,jpeg,png,bmp|max:2048'
+                        ]
+                    );
+
+                    if ($validator->fails()) {
+                        return response()->json([
+                            'Validation_Error' => "Unsupported file format for 'avatar'",
+                        ]);
+                    }
+
+                    $fileName = "user_" . $id . "_avatar.".$request->file('avatar')->extension();
+
+                    Storage::delete("user_" . $request->get('name') . "_avatar");
+
+                    $request->file('avatar')->move(public_path('images/avatars'), $fileName);
+
+                    $user['avatar'] = asset("images/avatars/".$fileName);
+                }
                 $user->save();
+//                return view('update', ['data' => $user]);
                 return response()->json([
                     'data' => $user,
                 ]);
             } catch (Exception $e) {
-                throw new CustomException($e->getMessage());
+                throw new CustomException("Exception occured $e. " . $e->getMessage());
             }
         }
     }
@@ -180,8 +222,8 @@ class UserController extends Controller
 
         $votes = [];
         $votes['up_votes_received'] =  $votes['down_votes_received'] =  $votes['up_voted_answer']  =  $votes['down_voted_answer'] = 0;
-        
-        $votes['votedQuestions'] = DB::table('question_user')->where('user_id', $id)->count();
+
+         $votes['votedQuestions'] = DB::table('question_user')->where('user_id', $id)->count();
         $votes['votedAnswers'] = DB::table('answer_user')->where('user_id', $id)->count();
 
         if ($questions) {

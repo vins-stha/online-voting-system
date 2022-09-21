@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\UserController;
 
 use Illuminate\Http\Request;
 /*
@@ -18,4 +18,11 @@ use Illuminate\Http\Request;
 Route::get('/', function () {
     return view('welcome');
 });
-//Route::get('/question/tags={tags}', [QuestionController::class, 'listQuestionsByTag']);
+Route::get('/user/profile', function(){
+    return view('profile');
+});
+Route::get('/users/update', function () {
+    return view('update');
+});
+
+Route::post('/users/update', [UserController::class, 'update']);
