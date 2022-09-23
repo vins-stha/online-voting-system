@@ -46,23 +46,10 @@ class QuestionController extends Controller
     public function index(Request $request)
     {
         // if (!$request->user()->id) 
-        $questions = Question::with(['answers', 'tags'])
-        
+        $questions = Question::with(['answers', 'tags'])    
+        ->orderBy('created_at', 'desc')
         ->get();
-        // ->orderedBy('timestamps');
-        // {
-        //     $questions = Question::with(['answers', 'tags'])
-        //     ->get()
-        //     ->sortByDesc('created_at', 'desc');
-        //         // ->get();
-        //         // ->sortByDesc('timestamps');
-        // }
-        // else
-        // {
-        //     $questions = Question::with(['answers', 'tags'])
-        //     ->get()
-        //     ->orderedBy('timestamps');
-        // }
+ 
         return response()->json([
             'questions' => $questions
         ], 200);
@@ -116,7 +103,7 @@ class QuestionController extends Controller
         } catch (Exception $e) {
             throw new CustomException($e->getMessage());
         }
-        $question = Question::with('answers')->find($id);
+        $question = Question::with(['answers', 'tags'])->find($id);
         if (!$question)
             throw new NotFoundResourceException("Question with id " . $id . " not found");
         return response()->json([

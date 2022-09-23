@@ -18,15 +18,15 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
         // validate inputs
-        $validate = Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'name' => 'required|min:3',
             'password' => 'required|confirmed', // confirmed from input attribute with name password_confirmation
             'email' => 'required|email|unique:users'
         ]);
-        if ($validate->fails()) {
+        if ($validator->fails()) {
             return response()->json([
-                'Validation_error' => $validate->errors()
-            ]);
+                'Validation_error' => $validator->errors()
+            ],400);
         }
 
         try {
@@ -41,7 +41,7 @@ class RegisterController extends Controller
                 'access_token' => $token->plainTextToken,
                 'type' => 'Bearer',
                 'message' => 'Registration successful'
-            ]);
+            ],201);
         } catch (Exception $e) {
             throw new CustomException($e->getMessage());
         }
@@ -56,7 +56,7 @@ class RegisterController extends Controller
         // var_dump($data);
         if (!auth()->attempt($data)) {
             return response()->json([
-                'message' => 'User could not be authorized',
+                'error' => 'User could not be authorized',
             ], 401);
         }
         $user = Auth::user();

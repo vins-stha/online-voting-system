@@ -38,9 +38,9 @@ Route::
 prefix('/v1/users')->group(function () {
     Route::get('/', [UserController::class, 'index']);
     Route::get('/{id}', [UserController::class, 'findById']);
-    Route::put('/{id}', [UserController::class, 'update']);
+    Route::post('/{id}', [UserController::class, 'update']);
     Route::delete('/{id}', [UserController::class, 'delete']);
-    Route::post('/{userId}', [UserController::class, 'updateCounter']);
+//    Route::post('/{userId}', [UserController::class, 'updateCounter']);
     Route::post('/logout', [RegisterController::class, 'logout']);
 
 });

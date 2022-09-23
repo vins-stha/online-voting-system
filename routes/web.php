@@ -25,4 +25,4 @@ Route::get('/users/update', function () {
     return view('update');
 });
 
-Route::post('/users/update', [UserController::class, 'update']);
+Route::put('/users/update', [UserController::class, 'update']);

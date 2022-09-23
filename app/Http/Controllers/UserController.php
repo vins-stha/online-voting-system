@@ -110,26 +110,29 @@ class UserController extends Controller
             throw new NotFoundResourceException("User not registered yet.");
         } else {
             try {
-                $user['name'] = $request->get('name') ? $request->get('name') : $user['name'];
-                $user['email'] = $request->get('email') ? $request->get('email') : $user['email'];;
-                $user['password'] = $request->get('password') ? Hash::make($request->get('password')) : $user['password'];
+                $user['name'] = $request->get('name') !== null ? $request->get('name') : $user['name'];
+                $user['email'] = $request->input('email') !== null ? $request->get('email') : $user['email'];;
+//                $user['password'] = $request->get('password') !== null ? Hash::make($request->get('password')) : $user['password'];
+
                 if ($request->file()) {
                     $validator = Validator::make(
                         $request->all(),
                         [
-                            'avatar' => 'mimes:jpg,jpeg,png,bmp|max:2048'
+                            'avatar' => 'mimes:jpg,jpeg,png,bmp,webp|max:2048'
                         ]
                     );
 
                     if ($validator->fails()) {
                         return response()->json([
-                            'Validation_Error' => "Unsupported file format for 'avatar'",
-                        ]);
+                            'Validation_error' => "Unsupported file format for 'avatar'",
+                        ],400);
                     }
 
                     $fileName = "user_" . $id . "_avatar.".$request->file('avatar')->extension();
 
                     Storage::delete("user_" . $request->get('name') . "_avatar");
+                    Storage::delete("user_" .$id . "_avatar");
+
 
                     $request->file('avatar')->move(public_path('images/avatars'), $fileName);
 
@@ -139,7 +142,7 @@ class UserController extends Controller
 //                return view('update', ['data' => $user]);
                 return response()->json([
                     'data' => $user,
-                ]);
+                 ]);
             } catch (Exception $e) {
                 throw new CustomException("Exception occured $e. " . $e->getMessage());
             }
