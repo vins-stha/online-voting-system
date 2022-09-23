@@ -5,13 +5,15 @@ namespace App\Http\Controllers;
 use App\Exceptions\CustomException;
 use App\Exceptions\DuplicateResourceException;
 use App\Models\Answer;
+use App\Models\Question;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Storage;
+use Validator;
 
 class UserController extends Controller
 {
@@ -27,18 +29,30 @@ class UserController extends Controller
         ]);
     }
 
-    public function findById($id)
+    public function findById(Request $request, $id)
     {
         try {
             $user = User::find($id);
+            $questions = Question::where('user_id', $id)->get();
+            // ->paginate(3);
+
             if (!$user)
                 throw new NotFoundResourceException("User with id " . $id . " not found");
             return response()->json([
                 'data' => $user,
+                'questions' => $questions,
+                'answers' => self::userPoints($request, $id),
+                'stat'=> self::userSummary($id),
             ]);
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return response()->json([
+                'error' => $e->getMessage(),
+            ],400);
         };
+    }
+
+    public function getDetailedInformation(Request $request){
+
     }
 
     public function create(Request $request)
@@ -57,6 +71,26 @@ class UserController extends Controller
                 $user['name'] = $request->get('name');
                 $user['email'] = $email;
                 $user['password'] = Hash::make($request->get('password'));
+
+                if ($request->file()) {
+                    $validator = Validator::make(
+                        $request->all(),
+                        [
+                            'avatar' => 'mimes:jpg,jpeg,png,bmp|max:2048'
+                        ]
+                    );
+
+                    if ($validator->fails()) {
+                        return response()->json([
+                            'Validation_Error' => "Unsupported file format for 'avatar'",
+                        ]);
+                    }
+
+                    $fileName = "user_" . $request->get('name') . "_avatar";
+
+                    $filePath = $request->file('avatar')->storePubliclyAs('avatars', $fileName, 'public');
+                    $user['avatar'] = '/storage/' . $filePath;
+                }
                 $newUser = new User($user);
                 $newUser->save();
             } catch (Exception $e) {
@@ -68,25 +102,49 @@ class UserController extends Controller
         ]);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id=null)
     {
-
         $user = User::find($id);
 
         if (!$user) {
             throw new NotFoundResourceException("User not registered yet.");
         } else {
-
             try {
-                $user['name'] = $request->get('name') ? $request->get('name') : $user['name'];
-                $user['email'] = $request->get('email') ? $request->get('email') : $user['email'];;
-                $user['password'] = $request->get('password') ? Hash::make($request->get('password')) : $user['password'];
+                $user['name'] = $request->get('name') !== null ? $request->get('name') : $user['name'];
+                $user['email'] = $request->input('email') !== null ? $request->get('email') : $user['email'];;
+//                $user['password'] = $request->get('password') !== null ? Hash::make($request->get('password')) : $user['password'];
+
+                if ($request->file()) {
+                    $validator = Validator::make(
+                        $request->all(),
+                        [
+                            'avatar' => 'mimes:jpg,jpeg,png,bmp,webp|max:2048'
+                        ]
+                    );
+
+                    if ($validator->fails()) {
+                        return response()->json([
+                            'Validation_error' => "Unsupported file format for 'avatar'",
+                        ],400);
+                    }
+
+                    $fileName = "user_" . $id . "_avatar.".$request->file('avatar')->extension();
+
+                    Storage::delete("user_" . $request->get('name') . "_avatar");
+                    Storage::delete("user_" .$id . "_avatar");
+
+
+                    $request->file('avatar')->move(public_path('images/avatars'), $fileName);
+
+                    $user['avatar'] = asset("images/avatars/".$fileName);
+                }
                 $user->save();
+//                return view('update', ['data' => $user]);
                 return response()->json([
                     'data' => $user,
-                ]);
+                 ]);
             } catch (Exception $e) {
-                throw new CustomException($e->getMessage());
+                throw new CustomException("Exception occured $e. " . $e->getMessage());
             }
         }
     }
@@ -157,5 +215,42 @@ class UserController extends Controller
             'total_points' => $count + $upvotes - $downvotes,
             'min' => User::USER_MINIMUM_POINTS
         ];
+    }
+
+
+    public function userSummary($id)
+    {
+        $questions = Question::where('user_id', $id)->get();
+        $answers = Answer::where('user_id', $id)->get();
+
+        $votes = [];
+        $votes['up_votes_received'] =  $votes['down_votes_received'] =  $votes['up_voted_answer']  =  $votes['down_voted_answer'] = 0;
+
+         $votes['votedQuestions'] = DB::table('question_user')->where('user_id', $id)->count();
+        $votes['votedAnswers'] = DB::table('answer_user')->where('user_id', $id)->count();
+
+        if ($questions) {
+            foreach ($questions as $question) {
+                $votes['up_votes_received'] += $question->vote_counts;
+                $votes['down_votes_received'] += $question->down_votes;
+            }
+        }
+
+        if ($answers) {
+            foreach ($answers as $answer) {
+                $votes['up_voted_answer'] += $answer->up_vote_counts;
+                $votes['down_voted_answer'] += $answer->down_vote_count;
+            }
+        }
+        $contribution = [];
+        $contribution['questions'] = count($questions);
+        $contribution['answers'] = count($answers);
+
+        $userStat = [
+            'votes' => $votes,
+            'contribution' => $contribution
+        ];
+
+        return $userStat;
     }
 }

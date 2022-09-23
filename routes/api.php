@@ -34,13 +34,13 @@ Route::prefix('/user')->group(function () {
 Route::middleware('auth:sanctum')->get('/user/getid', [UserController::class, 'getUserId']);
 
 Route::
-middleware('auth:sanctum')->
+//middleware('auth:sanctum')->
 prefix('/v1/users')->group(function () {
     Route::get('/', [UserController::class, 'index']);
     Route::get('/{id}', [UserController::class, 'findById']);
-    Route::put('/{id}', [UserController::class, 'update']);
+    Route::post('/{id}', [UserController::class, 'update']);
     Route::delete('/{id}', [UserController::class, 'delete']);
-    Route::post('/{userId}', [UserController::class, 'updateCounter']);
+//    Route::post('/{userId}', [UserController::class, 'updateCounter']);
     Route::post('/logout', [RegisterController::class, 'logout']);
 
 });
@@ -86,5 +86,5 @@ middleware('auth:sanctum')->
 prefix('/v1/votes')->group(function () {
     Route::post('/duplicate/{item}/{itemid}', [QuestionController::class, 'handleReportDuplicate']);
     Route::post('/{item}/{itemid}/{votetype}', [VoteController::class, 'vote']);
- 
+
 });
